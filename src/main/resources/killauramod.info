@@ -1,0 +1,16 @@
+[
+{
+  "modid": "KillAura",
+  "name": "Kill Aura",
+  "description": "Kills Entities within a specific range",
+  "version": "1.0.0",
+  "mcversion": "1.8",
+  "url": "http://github.com/mossyblog/KillAuraMod",
+  "updateUrl": "http://github.com/mossyblog/KillAuraMod",
+  "authorList": ["MossyBlog"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
