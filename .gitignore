@@ -18,7 +18,7 @@
 /projects/
 /repo/
 /buildSrc
-!/projects/Forge/src
+!/projects/Forge/src/
 
 #Patch rejects
 *.rej
