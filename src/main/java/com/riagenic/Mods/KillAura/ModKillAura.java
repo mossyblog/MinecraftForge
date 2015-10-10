@@ -1,5 +1,6 @@
 package com.riagenic.Mods.KillAura;
 
+import com.riagenic.Events.EventManager;
 import com.riagenic.UI.UITextAlignment;
 import com.riagenic.UI.UIRenderer;
 import com.riagenic.Utils.EntityHelper;
@@ -34,12 +35,15 @@ public class ModKillAura {
     public static final String VERSION = "1.0";
     public static final Logger logger = LogManager.getLogger(MODID);
     private static Minecraft mc = Minecraft.getMinecraft();
+    public EventManager eventManager;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         logger.info("Pre-Init");
         MinecraftForge.EVENT_BUS.register(this);
         FMLCommonHandler.instance().bus().register(this);
+
+        eventManager = new EventManager();
     }
 
     @SubscribeEvent
