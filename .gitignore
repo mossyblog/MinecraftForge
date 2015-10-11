@@ -15,10 +15,13 @@
 /.gradle
 
 #occupational hazards
-/projects/
 /repo/
 /buildSrc
-!/projects/Forge/src/
+/projects/.gradle
+/projects/.idea
+/projects/Clean/*
+/projects/run/
+
 
 #Patch rejects
 *.rej
