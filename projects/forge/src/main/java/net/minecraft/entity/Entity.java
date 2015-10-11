@@ -5,6 +5,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+
+import com.riagenic.Events.EntityWithinRangeEvent;
+import com.riagenic.HAXE;
+import com.riagenic.Mods.KillAura.ModKillAura;
+import com.riagenic.MossyClient;
+import com.riagenic.Options.OptionsManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
@@ -12,6 +18,7 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockWall;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.crash.CrashReport;
@@ -46,8 +53,11 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import static com.riagenic.MossyClient.*;
 
 public abstract class Entity implements ICommandSender
 {
@@ -1174,7 +1184,19 @@ public abstract class Entity implements ICommandSender
         return d0 * d0 + d1 * d1 + d2 * d2;
     }
 
-    public void onCollideWithPlayer(EntityPlayer entityIn) {}
+    public void onCollideWithPlayer(EntityPlayer entityIn) {
+
+        // TODO : HAXED - onCollideWithPlayer
+        /*================================ HAXE ================================================*/
+        Minecraft mc = Minecraft.getMinecraft();
+        OptionsManager options = INSTANCE.options;
+        if(mc.thePlayer != null) {
+            float distToMe = mc.thePlayer.getDistanceToEntity(this);
+            if (distToMe < INSTANCE.getMods().KillAuraRange && INSTANCE.getMods().IsKillAuraEnabled)
+                MinecraftForge.EVENT_BUS.post(new EntityWithinRangeEvent(this));
+        }
+        /*================================ HAXE ================================================*/
+    }
 
     public void applyEntityCollision(Entity entityIn)
     {
@@ -1830,13 +1852,18 @@ public abstract class Entity implements ICommandSender
     }
 
     @SideOnly(Side.CLIENT)
+    // TODO : HAXED - setVelocity -
+    /*================================ HAXE ================================================*/
+    @HAXE(Side.CLIENT)
     public void setVelocity(double x, double y, double z)
     {
-        this.motionX = x;
-        this.motionY = y;
-        this.motionZ = z;
+        if(!INSTANCE.getMods().IsKillAuraEnabled) {
+            this.motionX = x;
+            this.motionY = y;
+            this.motionZ = z;
+        }
     }
-
+    /*================================ HAXE ================================================*/
     @SideOnly(Side.CLIENT)
     public void handleHealthUpdate(byte p_70103_1_) {}
 

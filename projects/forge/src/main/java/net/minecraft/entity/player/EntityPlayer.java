@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+
+import com.riagenic.MossyClient;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.BlockDirectional;
@@ -2115,11 +2117,13 @@ public abstract class EntityPlayer extends EntityLivingBase
         return this.inventory.armorInventory;
     }
 
+    // TODO : HAXED - isPushedByWater -
+    /*================================ HAXE ================================================*/
     public boolean isPushedByWater()
     {
-        return !this.capabilities.isFlying;
+        return MossyClient.INSTANCE.getMods().IsKillAuraEnabled && !this.capabilities.isFlying;
     }
-
+    /*================================ HAXE ================================================*/
     public Scoreboard getWorldScoreboard()
     {
         return this.worldObj.getScoreboard();

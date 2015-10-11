@@ -3,6 +3,13 @@ package net.minecraft.entity;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+
+import com.riagenic.Events.EntityWithinRangeEvent;
+import com.riagenic.HAXE;
+import com.riagenic.Mods.KillAura.ModKillAura;
+import com.riagenic.MossyClient;
+import com.riagenic.Options.OptionsManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.ai.EntityJumpHelper;
@@ -12,8 +19,13 @@ import net.minecraft.entity.ai.EntitySenses;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityGhast;
+import net.minecraft.entity.monster.EntityIronGolem;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -37,8 +49,12 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import static com.riagenic.MossyClient.INSTANCE;
 
 public abstract class EntityLiving extends EntityLivingBase
 {
@@ -155,8 +171,70 @@ public abstract class EntityLiving extends EntityLivingBase
         }
     }
 
+    @HAXE(Side.CLIENT)
     public void onEntityUpdate()
     {
+        // TODO : HAXED - onEntityUpdate
+        /*================================ HAXE ================================================*/
+
+        Minecraft mc = Minecraft.getMinecraft();
+        OptionsManager.Target target = INSTANCE.getTargets();
+        if(mc.thePlayer != null) {
+            float distToMe = mc.thePlayer.getDistanceToEntity(this);
+            if (distToMe < INSTANCE.getMods().KillAuraRange && INSTANCE.getMods().IsKillAuraEnabled) {
+                MinecraftForge.EVENT_BUS.post(new EntityWithinRangeEvent(this));
+
+
+                // TODO - onEntityWithRangeEvent - Create a better Exclude vs Include engine here.
+                Boolean clearedForDeath = target.monsters;
+
+                // Animals
+                if ((this instanceof EntityAgeable) && (this instanceof EntityAnimal))
+                    clearedForDeath = target.animals;
+
+                // Villagers
+                if ((this instanceof EntityVillager))
+                    clearedForDeath = target.villagers;
+
+                // Zombies
+                if ((this instanceof EntityZombie)) {
+                    if ((this instanceof EntityZombie)) {
+                        EntityZombie zombie = (EntityZombie) this;
+                        boolean isvillager = zombie.isVillager();
+                        if (isvillager)
+                            clearedForDeath = target.villagerzombie;
+                        else
+                            clearedForDeath = target.monsters;
+                        // Kill the mount.
+                        if (zombie.isRiding()) {
+                            mc.playerController.attackEntity(mc.thePlayer, zombie.ridingEntity);
+                        }
+
+                    } else {
+                        clearedForDeath = target.monsters;
+                    }
+                }
+                // Golems
+                if ((this instanceof EntityIronGolem))
+                    clearedForDeath = target.golems;
+
+                // Squids
+                if ((this instanceof EntitySquid))
+                    clearedForDeath = target.squids;
+
+                if (this.isRiding())
+                    mc.playerController.attackEntity(mc.thePlayer, this.ridingEntity);
+
+                // If they are Invisible, then its probably a KillAura Anti-cheat.
+                if (this.isInvisible() || this.hasCustomName())
+                    clearedForDeath = false;
+
+                // KILL EM!
+                if (clearedForDeath)
+                    mc.playerController.attackEntity(mc.thePlayer, this);
+            }
+        }
+        /*================================ HAXE ================================================*/
         super.onEntityUpdate();
         this.worldObj.theProfiler.startSection("mobBaseTick");
 

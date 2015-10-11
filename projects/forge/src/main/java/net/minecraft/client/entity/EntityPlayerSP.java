@@ -1,5 +1,8 @@
 package net.minecraft.client.entity;
 
+import com.riagenic.Events.ChatOutputEvent;
+import com.riagenic.HAXE;
+import com.riagenic.MossyClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -53,7 +56,6 @@ import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.PlaySoundAtEntityEvent;
 
@@ -224,12 +226,34 @@ public class EntityPlayerSP extends AbstractClientPlayer
         return null;
     }
 
+    // TODO : HAXED - sendAutomaticChatMessage -
+    /*================================ HAXE ================================================*/
+    @HAXE(Side.CLIENT)
+    public void sendAutomaticChatMessage(String message)
+    {
+        ChatOutputEvent event = new ChatOutputEvent(message, true);
+        MinecraftForge.EVENT_BUS.post(event);
+        if(event.isCanceled())
+            return;
+
+        this.sendQueue.addToSendQueue(new C01PacketChatMessage(message));
+    }
+    /*================================ HAXE ================================================*/
+
     public void joinEntityItemWithWorld(EntityItem p_71012_1_) {}
 
-    public void sendChatMessage(String p_71165_1_)
+    // TODO : HAXED - sendChatMessage -
+    /*================================ HAXE ================================================*/
+    @HAXE(Side.CLIENT)
+    public void sendChatMessage(String message)
     {
-        this.sendQueue.addToSendQueue(new C01PacketChatMessage(p_71165_1_));
+        ChatOutputEvent event = new ChatOutputEvent(message, false);
+        MinecraftForge.EVENT_BUS.post(event);
+        if(event.isCanceled())
+            return;
+        this.sendQueue.addToSendQueue(new C01PacketChatMessage(message));
     }
+    /*================================ HAXE ================================================*/
 
     public void swingItem()
     {

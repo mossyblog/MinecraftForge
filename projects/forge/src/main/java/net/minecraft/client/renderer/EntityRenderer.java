@@ -6,6 +6,9 @@ import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
+
+import com.riagenic.HAXE;
+import com.riagenic.MossyClient;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
@@ -496,8 +499,14 @@ public class EntityRenderer implements IResourceManagerReloadListener
         }
     }
 
+    // TODO : HAXED - hurtCameraEffect -
+    /*================================ HAXE ================================================*/
+    @HAXE(Side.CLIENT)
     private void hurtCameraEffect(float p_78482_1_)
     {
+        if(MossyClient.INSTANCE.getMods().IsHurtcamEnabled)
+            return;
+
         if (this.mc.getRenderViewEntity() instanceof EntityLivingBase)
         {
             EntityLivingBase entitylivingbase = (EntityLivingBase)this.mc.getRenderViewEntity();
@@ -523,7 +532,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
             GlStateManager.rotate(f2, 0.0F, 1.0F, 0.0F);
         }
     }
-
+    /*================================ HAXE ================================================*/
     private void setupViewBobbing(float p_78475_1_)
     {
         if (this.mc.getRenderViewEntity() instanceof EntityPlayer)
@@ -1434,6 +1443,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
 
     private void addRainParticles()
     {
+
         float f = this.mc.theWorld.getRainStrength(1.0F);
 
         if (!this.mc.gameSettings.fancyGraphics)
@@ -1511,9 +1521,14 @@ public class EntityRenderer implements IResourceManagerReloadListener
             }
         }
     }
-
+    // TODO : HAXED - renderRainSnow -
+    /*================================ HAXE ================================================*/
+    @HAXE(Side.CLIENT)
     protected void renderRainSnow(float partialTicks)
     {
+        if(MossyClient.INSTANCE.getMods().IsRainEnabled)
+            return;
+
         net.minecraftforge.client.IRenderHandler renderer = this.mc.theWorld.provider.getWeatherRenderer();
         if (renderer != null)
         {
@@ -1674,6 +1689,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
             this.disableLightmap();
         }
     }
+    /*================================ HAXE ================================================*/
 
     public void setupOverlayRendering()
     {

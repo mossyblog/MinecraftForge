@@ -36,7 +36,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import javax.imageio.ImageIO;
-import net.minecraft.block.Block;
+
+import com.riagenic.HAXE;
+import com.riagenic.MossyClient;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
@@ -59,7 +61,6 @@ import net.minecraft.client.gui.achievement.GuiAchievement;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.gui.stream.GuiStreamUnavailable;
 import net.minecraft.client.main.GameConfiguration;
-import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -112,24 +113,12 @@ import net.minecraft.client.stream.TwitchStream;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLeashKnot;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.boss.BossStatus;
-import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.entity.item.EntityBoat;
-import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.entity.item.EntityPainting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Bootstrap;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.handshake.client.C00Handshake;
@@ -143,7 +132,6 @@ import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.stats.AchievementList;
 import net.minecraft.stats.IStatStringFormat;
 import net.minecraft.stats.StatFileWriter;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IThreadListener;
@@ -492,6 +480,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         this.checkGLError("Post startup");
         this.ingameGUI = new net.minecraftforge.client.GuiIngameForge(this);
 
+        // TODO : HAXED - Bootstrap MossyClient.
+        /*================================ HAXE ================================================*/
+        MossyClient.INSTANCE.startClient();
+        /*================================ HAXE ================================================*/
         if (this.serverName != null)
         {
             net.minecraftforge.fml.client.FMLClientHandler.instance().connectToServerAtStartup(this.serverName, this.serverPort);
@@ -1398,7 +1390,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             {
                 BlockPos blockpos = this.objectMouseOver.getBlockPos();
 
-                if (this.theWorld.getBlockState(blockpos).getBlock().getMaterial() != Material.air && this.playerController.func_180512_c(blockpos, this.objectMouseOver.sideHit))
+                if (this.theWorld.getBlockState(blockpos).getBlock().getMaterial() != Material.air && this.playerController.onPlayerDamageBlock(blockpos, this.objectMouseOver.sideHit))
                 {
                     this.effectRenderer.addBlockHitEffects(blockpos, this.objectMouseOver);
                     this.thePlayer.swingItem();
@@ -1410,10 +1402,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             }
         }
     }
-
+    @HAXE(Side.CLIENT)
     private void clickMouse()
     {
-        // TODO ss
         if (this.leftClickCounter <= 0)
         {
             this.thePlayer.swingItem();
@@ -1439,7 +1430,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
                         if (this.theWorld.getBlockState(blockpos).getBlock().getMaterial() != Material.air)
                         {
-                            this.playerController.func_180511_b(blockpos, this.objectMouseOver.sideHit);
+                            this.playerController.clickBlock(blockpos, this.objectMouseOver.sideHit);
                             break;
                         }
                     case 3:
@@ -1607,7 +1598,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             this.entityRenderer.updateShaderGroupSize(this.displayWidth, this.displayHeight);
         }
     }
-
+    @HAXE(Side.CLIENT)
     public void runTick() throws IOException
     {
         if (this.rightClickDelayTimer > 0)
@@ -1824,6 +1815,16 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                     }
                     else
                     {
+
+                        // TODO : HAXED - Injected keyEvent Bindings
+                        /*================================ HAXE ================================================*/
+                        if(Keyboard.getEventKey() != 0) {
+                            String eventCommand = MossyClient.INSTANCE.keybinds.get(Keyboard.getKeyName(Keyboard.getEventKey()));
+                            if(eventCommand != null)
+                                thePlayer.sendAutomaticChatMessage(eventCommand);
+                        }
+                        /*================================ HAXE ================================================*/
+
                         if (i == 1)
                         {
                             this.displayInGameMenu();

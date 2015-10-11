@@ -1,5 +1,8 @@
 package net.minecraft.client.multiplayer;
 
+import com.riagenic.HAXE;
+import com.riagenic.MossyClient;
+import com.riagenic.Options.OptionsManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -31,12 +34,14 @@ import net.minecraft.world.WorldSettings;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import static com.riagenic.MossyClient.*;
+
 @SideOnly(Side.CLIENT)
 public class PlayerControllerMP
 {
     private final Minecraft mc;
     private final NetHandlerPlayClient netClientHandler;
-    private BlockPos field_178895_c = new BlockPos(-1, -1, -1);
+    private BlockPos currentBlock = new BlockPos(-1, -1, -1);
     private ItemStack currentItemHittingBlock;
     private float curBlockDamageMP;
     private float stepSoundTickCounter;
@@ -53,7 +58,7 @@ public class PlayerControllerMP
         this.netClientHandler = p_i45062_2_;
     }
 
-    public static void func_178891_a(Minecraft mcIn, PlayerControllerMP p_178891_1_, BlockPos p_178891_2_, EnumFacing p_178891_3_)
+    public static void clickBlockCreative(Minecraft mcIn, PlayerControllerMP p_178891_1_, BlockPos p_178891_2_, EnumFacing p_178891_3_)
     {
         if (!mcIn.theWorld.extinguishFire(mcIn.thePlayer, p_178891_2_, p_178891_3_))
         {
@@ -143,7 +148,7 @@ public class PlayerControllerMP
                     block1.onBlockDestroyedByPlayer(worldclient, pos, iblockstate);
                 }
 
-                this.field_178895_c = new BlockPos(this.field_178895_c.getX(), -1, this.field_178895_c.getZ());
+                this.currentBlock = new BlockPos(this.currentBlock.getX(), -1, this.currentBlock.getZ());
 
                 if (!this.currentGameType.isCreative())
                 {
@@ -164,8 +169,9 @@ public class PlayerControllerMP
             }
         }
     }
-
-    public boolean func_180511_b(BlockPos p_180511_1_, EnumFacing p_180511_2_)
+    // TODO : HAXED - clickBlock -
+    /*================================ HAXE ================================================*/
+    public boolean clickBlock(BlockPos loc, EnumFacing face)
     {
         Block block;
 
@@ -178,7 +184,7 @@ public class PlayerControllerMP
 
             if (!this.mc.thePlayer.isAllowEdit())
             {
-                block = this.mc.theWorld.getBlockState(p_180511_1_).getBlock();
+                block = this.mc.theWorld.getBlockState(loc).getBlock();
                 ItemStack itemstack = this.mc.thePlayer.getCurrentEquippedItem();
 
                 if (itemstack == null)
@@ -193,7 +199,7 @@ public class PlayerControllerMP
             }
         }
 
-        if (!this.mc.theWorld.getWorldBorder().contains(p_180511_1_))
+        if (!this.mc.theWorld.getWorldBorder().contains(loc))
         {
             return false;
         }
@@ -201,58 +207,63 @@ public class PlayerControllerMP
         {
             if (this.currentGameType.isCreative())
             {
-                this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, p_180511_1_, p_180511_2_));
-                func_178891_a(this.mc, this, p_180511_1_, p_180511_2_);
-                this.blockHitDelay = 5;
+                this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, loc, face));
+                clickBlockCreative(this.mc, this, loc, face);
+
+                this.blockHitDelay = INSTANCE.getMods().IsFastBreakEnabled ? 0 : 5;
             }
-            else if (!this.isHittingBlock || !this.func_178893_a(p_180511_1_))
+            else if (!this.isHittingBlock || !this.isHittingPosition(loc))
             {
                 if (this.isHittingBlock)
                 {
-                    this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, this.field_178895_c, p_180511_2_));
+                    this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, this.currentBlock, face));
                 }
 
-                this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, p_180511_1_, p_180511_2_));
-                block = this.mc.theWorld.getBlockState(p_180511_1_).getBlock();
+                this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, loc, face));
+                block = this.mc.theWorld.getBlockState(loc).getBlock();
                 boolean flag = block.getMaterial() != Material.air;
 
                 if (flag && this.curBlockDamageMP == 0.0F)
                 {
-                    block.onBlockClicked(this.mc.theWorld, p_180511_1_, this.mc.thePlayer);
+                    block.onBlockClicked(this.mc.theWorld, loc, this.mc.thePlayer);
                 }
 
-                if (flag && block.getPlayerRelativeBlockHardness(this.mc.thePlayer, this.mc.thePlayer.worldObj, p_180511_1_) >= 1.0F)
+                if (flag && block.getPlayerRelativeBlockHardness(this.mc.thePlayer, this.mc.thePlayer.worldObj, loc) >= 1.0F)
                 {
-                    this.onPlayerDestroyBlock(p_180511_1_, p_180511_2_);
+                    this.onPlayerDestroyBlock(loc, face);
                 }
                 else
                 {
                     this.isHittingBlock = true;
-                    this.field_178895_c = p_180511_1_;
+                    this.currentBlock = loc;
                     this.currentItemHittingBlock = this.mc.thePlayer.getHeldItem();
                     this.curBlockDamageMP = 0.0F;
                     this.stepSoundTickCounter = 0.0F;
-                    this.mc.theWorld.sendBlockBreakProgress(this.mc.thePlayer.getEntityId(), this.field_178895_c, (int)(this.curBlockDamageMP * 10.0F) - 1);
+                    this.mc.theWorld.sendBlockBreakProgress(this.mc.thePlayer.getEntityId(), this.currentBlock, (int)(this.curBlockDamageMP * 10.0F) - 1);
                 }
             }
 
             return true;
         }
     }
-
+    /*================================ HAXE ================================================*/
     public void resetBlockRemoving()
     {
         if (this.isHittingBlock)
         {
-            this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, this.field_178895_c, EnumFacing.DOWN));
+            this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, this.currentBlock, EnumFacing.DOWN));
             this.isHittingBlock = false;
             this.curBlockDamageMP = 0.0F;
-            this.mc.theWorld.sendBlockBreakProgress(this.mc.thePlayer.getEntityId(), this.field_178895_c, -1);
+            this.mc.theWorld.sendBlockBreakProgress(this.mc.thePlayer.getEntityId(), this.currentBlock, -1);
         }
     }
 
-    public boolean func_180512_c(BlockPos p_180512_1_, EnumFacing p_180512_2_)
+    @HAXE(Side.CLIENT)
+    // TODO : HAXED - onPlayerDamageBlock -
+    /*================================ HAXE ================================================*/
+    public boolean onPlayerDamageBlock(BlockPos posBlock, EnumFacing directionFacing)
     {
+
         this.syncCurrentPlayItem();
 
         if (this.blockHitDelay > 0)
@@ -260,16 +271,16 @@ public class PlayerControllerMP
             --this.blockHitDelay;
             return true;
         }
-        else if (this.currentGameType.isCreative() && this.mc.theWorld.getWorldBorder().contains(p_180512_1_))
+        else if (this.currentGameType.isCreative() && this.mc.theWorld.getWorldBorder().contains(posBlock))
         {
-            this.blockHitDelay = 5;
-            this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, p_180512_1_, p_180512_2_));
-            func_178891_a(this.mc, this, p_180512_1_, p_180512_2_);
+            this.blockHitDelay = INSTANCE.getMods().IsFastBreakEnabled ? 0 : 5;
+            this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, posBlock, directionFacing));
+            clickBlockCreative(this.mc, this, posBlock, directionFacing);
             return true;
         }
-        else if (this.func_178893_a(p_180512_1_))
+        else if (this.isHittingPosition(posBlock))
         {
-            Block block = this.mc.theWorld.getBlockState(p_180512_1_).getBlock();
+            Block block = this.mc.theWorld.getBlockState(posBlock).getBlock();
 
             if (block.getMaterial() == Material.air)
             {
@@ -278,11 +289,19 @@ public class PlayerControllerMP
             }
             else
             {
-                this.curBlockDamageMP += block.getPlayerRelativeBlockHardness(this.mc.thePlayer, this.mc.thePlayer.worldObj, p_180512_1_);
+                float blckDmgAmt = block.getPlayerRelativeBlockHardness(this.mc.thePlayer, this.mc.thePlayer.worldObj, posBlock);
+
+
+                // PUMP UP THE SPEED YO...
+                if(INSTANCE.getMods().IsFastBreakEnabled && !currentGameType.isCreative()) {
+                    blckDmgAmt *= INSTANCE.getMods().FastBreakSpeed;
+                }
+
+                this.curBlockDamageMP += blckDmgAmt;
 
                 if (this.stepSoundTickCounter % 4.0F == 0.0F)
                 {
-                    this.mc.getSoundHandler().playSound(new PositionedSoundRecord(new ResourceLocation(block.stepSound.getStepSound()), (block.stepSound.getVolume() + 1.0F) / 8.0F, block.stepSound.getFrequency() * 0.5F, (float)p_180512_1_.getX() + 0.5F, (float)p_180512_1_.getY() + 0.5F, (float)p_180512_1_.getZ() + 0.5F));
+                    this.mc.getSoundHandler().playSound(new PositionedSoundRecord(new ResourceLocation(block.stepSound.getStepSound()), (block.stepSound.getVolume() + 1.0F) / 8.0F, block.stepSound.getFrequency() * 0.5F, (float)posBlock.getX() + 0.5F, (float)posBlock.getY() + 0.5F, (float)posBlock.getZ() + 0.5F));
                 }
 
                 ++this.stepSoundTickCounter;
@@ -290,22 +309,25 @@ public class PlayerControllerMP
                 if (this.curBlockDamageMP >= 1.0F)
                 {
                     this.isHittingBlock = false;
-                    this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, p_180512_1_, p_180512_2_));
-                    this.onPlayerDestroyBlock(p_180512_1_, p_180512_2_);
+                    this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, posBlock, directionFacing));
+                    this.onPlayerDestroyBlock(posBlock, directionFacing);
                     this.curBlockDamageMP = 0.0F;
                     this.stepSoundTickCounter = 0.0F;
-                    this.blockHitDelay = 5;
+                    this.blockHitDelay = INSTANCE.getMods().IsFastBreakEnabled ? 0 : 5;
+                } else if( !this.currentGameType.isCreative() && INSTANCE.getMods().IsFastBreakEnabled ) {
+                    this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, posBlock, directionFacing));
                 }
 
-                this.mc.theWorld.sendBlockBreakProgress(this.mc.thePlayer.getEntityId(), this.field_178895_c, (int)(this.curBlockDamageMP * 10.0F) - 1);
+                this.mc.theWorld.sendBlockBreakProgress(this.mc.thePlayer.getEntityId(), this.currentBlock, (int)(this.curBlockDamageMP * 10.0F) - 1);
                 return true;
             }
         }
         else
         {
-            return this.func_180511_b(p_180512_1_, p_180512_2_);
+            return this.clickBlock(posBlock, directionFacing);
         }
     }
+    /*================================ HAXE ================================================*/
 
     public float getBlockReachDistance()
     {
@@ -326,7 +348,7 @@ public class PlayerControllerMP
         }
     }
 
-    private boolean func_178893_a(BlockPos p_178893_1_)
+    private boolean isHittingPosition(BlockPos pos)
     {
         ItemStack itemstack = this.mc.thePlayer.getHeldItem();
         boolean flag = this.currentItemHittingBlock == null && itemstack == null;
@@ -336,7 +358,7 @@ public class PlayerControllerMP
             flag = itemstack.getItem() == this.currentItemHittingBlock.getItem() && ItemStack.areItemStackTagsEqual(itemstack, this.currentItemHittingBlock) && (itemstack.isItemStackDamageable() || itemstack.getMetadata() == this.currentItemHittingBlock.getMetadata());
         }
 
-        return p_178893_1_.equals(this.field_178895_c) && flag;
+        return pos.equals(this.currentBlock) && flag;
     }
 
     private void syncCurrentPlayItem()

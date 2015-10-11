@@ -782,7 +782,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
             }
             else if (packetIn.func_148977_d() == 1)
             {
-                entity.performHurtAnimation();
+//                entity.performHurtAnimation();
             }
             else if (packetIn.func_148977_d() == 2)
             {
