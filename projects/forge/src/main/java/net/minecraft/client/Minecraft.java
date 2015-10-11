@@ -1819,7 +1819,23 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                         // TODO : HAXED - Injected keyEvent Bindings
                         /*================================ HAXE ================================================*/
                         if(Keyboard.getEventKey() != 0) {
-                            String eventCommand = MossyClient.Mossy.keybinds.get(Keyboard.getKeyName(Keyboard.getEventKey()));
+
+                            String key = "";
+
+                            // PREFIX SHIFT
+
+                            if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+                                key += "CTRL+";
+
+                            if(Keyboard.isKeyDown(Keyboard.KEY_LMENU))
+                                key += "ALT+";
+
+                            if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+                                key += "SHIFT+";
+
+                            // ACTUAL KEY.
+                            key += Keyboard.getKeyName(Keyboard.getEventKey());
+                            String eventCommand = MossyClient.Mossy.keybinds.get(key);
                             if(eventCommand != null)
                                 thePlayer.sendAutomaticChatMessage(eventCommand);
                         }

@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+
+import com.riagenic.HAXE;
+import com.riagenic.MossyClient;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -49,6 +52,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import static com.riagenic.MossyClient.*;
 
 public abstract class EntityLivingBase extends Entity
 {
@@ -1400,6 +1405,9 @@ public abstract class EntityLivingBase extends Entity
         this.motionY += 0.03999999910593033D;
     }
 
+    // TODO : HAXED - moveEntityWithHeading
+    /*================================ HAXE ================================================*/
+    @HAXE(Side.CLIENT)
     public void moveEntityWithHeading(float p_70612_1_, float p_70612_2_)
     {
         double d0;
@@ -1410,7 +1418,7 @@ public abstract class EntityLivingBase extends Entity
             float f4;
             float f5;
 
-            if (this.isInWater() && (!(this instanceof EntityPlayer) || !((EntityPlayer)this).capabilities.isFlying))
+            if (this.isInWater() && (!(this instanceof EntityPlayer) || !((EntityPlayer)this).capabilities.isFlying) && Mossy.getMods().IsNoSlowdownEnabled)
             {
                 d0 = this.posY;
                 f4 = 0.8F;
@@ -1550,7 +1558,7 @@ public abstract class EntityLivingBase extends Entity
         this.limbSwingAmount += (f6 - this.limbSwingAmount) * 0.4F;
         this.limbSwing += this.limbSwingAmount;
     }
-
+    /*================================ HAXE ================================================*/
     public float getAIMoveSpeed()
     {
         return this.landMovementFactor;

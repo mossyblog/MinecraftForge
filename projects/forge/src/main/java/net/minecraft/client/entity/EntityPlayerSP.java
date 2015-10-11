@@ -3,6 +3,8 @@ package net.minecraft.client.entity;
 import com.riagenic.Events.ChatOutputEvent;
 import com.riagenic.HAXE;
 import com.riagenic.MossyClient;
+import com.riagenic.Utils.EntityHelper;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -58,6 +60,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.PlaySoundAtEntityEvent;
+import org.apache.http.util.EntityUtils;
+
+import static com.riagenic.MossyClient.Mossy;
 
 @SideOnly(Side.CLIENT)
 public class EntityPlayerSP extends AbstractClientPlayer
@@ -132,6 +137,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
         }
     }
 
+    @HAXE(Side.CLIENT)
+    // TODO : HAXED - onUpdateWalkingPlayer -
+    /*================================ HAXE ================================================*/
     public void onUpdateWalkingPlayer()
     {
         boolean flag = this.isSprinting();
@@ -168,6 +176,20 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
         if (this.isCurrentViewEntity())
         {
+
+            float yaw;
+            float pitch;
+            if(EntityHelper.lookChanged)
+            {
+                yaw =  EntityHelper.yaw;
+                pitch = EntityHelper.pitch;
+                EntityHelper.lookChanged = false;
+            }else
+            {
+                yaw =  rotationYaw;
+                pitch = rotationPitch;
+            }
+
             double d0 = this.posX - this.lastReportedPosX;
             double d1 = this.getEntityBoundingBox().minY - this.lastReportedPosY;
             double d2 = this.posZ - this.lastReportedPosZ;
@@ -176,27 +198,39 @@ public class EntityPlayerSP extends AbstractClientPlayer
             boolean flag2 = d0 * d0 + d1 * d1 + d2 * d2 > 9.0E-4D || this.positionUpdateTicks >= 20;
             boolean flag3 = d3 != 0.0D || d4 != 0.0D;
 
-            if (this.ridingEntity == null)
-            {
-                if (flag2 && flag3)
-                {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.posX, this.getEntityBoundingBox().minY, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround));
-                }
-                else if (flag2)
-                {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(this.posX, this.getEntityBoundingBox().minY, this.posZ, this.onGround));
-                }
-                else if (flag3)
-                {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.rotationYaw, this.rotationPitch, this.onGround));
-                }
-                else
-                {
+            Mossy.getMods().IsFreeCamEnabled = false;
+            Mossy.getMods().IsBrightnessEnabled = false;
+
+
+            /* STOP MOTION UPDATES FOR POTIONS & FREECAMS (FREEZE MODEL) */
+            if (Mossy.getMods().IsPositionHaxeEnabled || Mossy.getMods().IsFreeCamEnabled) {
+                // STOP MOTION UPDATE
+
+
+            /* WATER WALKING MODE */
+            } else if (Mossy.getMods().IsWaterWalkEnabled
+                    && !isInWater()
+                    && Minecraft.getMinecraft().theWorld.getBlockState(new BlockPos(this).add(0, -1, 0)).getBlock().getMaterial() == Material.water) {
+
+                if (flag2) {
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.posX, this.getEntityBoundingBox().minY + (ticksExisted % 2 == 0 ? 0.05 : -0.05), this.posZ, yaw, pitch, this.onGround));
+                } else if (flag3) {
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(yaw, pitch, this.onGround));
+                } else {
                     this.sendQueue.addToSendQueue(new C03PacketPlayer(this.onGround));
                 }
-            }
-            else
-            {
+            /* NORMAL MODE */
+            } else if (this.ridingEntity == null) {
+                if (flag2 && flag3) {
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.posX, this.getEntityBoundingBox().minY, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround));
+                } else if (flag2) {
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(this.posX, this.getEntityBoundingBox().minY, this.posZ, this.onGround));
+                } else if (flag3) {
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.rotationYaw, this.rotationPitch, this.onGround));
+                } else {
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer(this.onGround));
+                }
+            } else {
                 this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.motionX, -999.0D, this.motionZ, this.rotationYaw, this.rotationPitch, this.onGround));
                 flag2 = false;
             }
@@ -218,7 +252,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
             }
         }
     }
-
+    /*================================ HAXE ================================================*/
     public EntityItem dropOneItem(boolean p_71040_1_)
     {
         C07PacketPlayerDigging.Action action = p_71040_1_ ? C07PacketPlayerDigging.Action.DROP_ALL_ITEMS : C07PacketPlayerDigging.Action.DROP_ITEM;
@@ -700,13 +734,15 @@ public class EntityPlayerSP extends AbstractClientPlayer
         boolean flag2 = this.movementInput.moveForward >= f;
         this.movementInput.updatePlayerMoveState();
 
-        if (this.isUsingItem() && !this.isRiding())
+        // TODO : HAXED - onLivingUpdate
+        /*================================ HAXE ================================================*/
+        if (this.isUsingItem() && !this.isRiding() && Mossy.getMods().IsNoSlowdownEnabled)
         {
             this.movementInput.moveStrafe *= 0.2F;
             this.movementInput.moveForward *= 0.2F;
             this.sprintToggleTimer = 0;
         }
-
+        /*================================ HAXE ================================================*/
         this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ + (double)this.width * 0.35D);
         this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ - (double)this.width * 0.35D);
         this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ - (double)this.width * 0.35D);

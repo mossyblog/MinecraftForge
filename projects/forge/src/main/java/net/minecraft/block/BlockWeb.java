@@ -1,6 +1,8 @@
 package net.minecraft.block;
 
 import java.util.Random;
+
+import com.riagenic.MossyClient;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -23,11 +25,15 @@ public class BlockWeb extends Block
         super(Material.web);
         this.setCreativeTab(CreativeTabs.tabDecorations);
     }
-
+    // TODO : HAXED - onEntityCollidedWithBlock
+    /*================================ HAXE ================================================*/
     public void onEntityCollidedWithBlock(World worldIn, BlockPos pos, IBlockState state, Entity entityIn)
     {
-        entityIn.setInWeb();
+        if(!MossyClient.Mossy.getMods().IsNoSlowdownEnabled) {
+            entityIn.setInWeb();
+        }
     }
+    /*================================ HAXE ================================================*/
 
     public boolean isOpaqueCube()
     {
