@@ -15,14 +15,13 @@ public class OptionsManager {
         public int KillAuraRange = 9;
         public int NukeRange = 9;
         public int FastBreakSpeed = 10;
-        public boolean IsXrayEnabled = false;
-        public boolean IsBrightnessEnabled = false;
+        public boolean IsXrayEnabled = true;
+        public boolean IsBrightnessEnabled = true;
         public boolean IsHurtcamEnabled = true;
         public boolean IsNukeEnabled = false;
         public boolean IsHarvestEnabled = false;
         public boolean IsSurgicalNukeEnabled = false;
-
-
+        public boolean IsWaterWalkEnabled = true;
 
 
     }

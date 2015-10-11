@@ -49,10 +49,12 @@ public class ModMossyHacks {
     public void onRenderWorldLastEvent(RenderWorldLastEvent event) {
         ticks = event.partialTicks;
 
+        Mossy.getMods().IsBrightnessEnabled = true;
+        Mossy.getMods().IsRainEnabled = false;
+
         if(mc.theWorld != null) {
             ClosestEntityOverlay(EntityHelper.getClosestEntity(true));
         }
-        Minecraft.getMinecraft().entityRenderer.enableLightmap();
 
         // Brightness Mod.
         if (Mossy.getMods().IsBrightnessEnabled || Mossy.getMods().IsXrayEnabled) {
