@@ -21,6 +21,15 @@ import java.util.List;
  */
 public class EntityHelper {
 
+    public synchronized static void faceEntityClient(EntityLivingBase entity) {
+        float[] rotations = getRotationsNeeded(entity);
+        if(rotations != null)
+        {
+            mc.thePlayer.rotationYaw = limitAngleChange(mc.thePlayer.prevRotationYaw, rotations[0], 55);// NoCheat+
+            // bypass!!!
+            mc.thePlayer.rotationPitch = rotations[1];
+        }
+    }
     private static Minecraft mc = Minecraft.getMinecraft();
     public static EntityLivingBase getClosestEntity(boolean ignoreFriends) {
         EntityLivingBase closestEntity = null;
@@ -84,7 +93,8 @@ public class EntityHelper {
         PLAYER,
         UNKNOWN
     }
-    public static EntityType getEntityType(EntityLiving entity) {
+    public static EntityType getEntityType(EntityLiving entity)
+    {
 
         if (!(entity instanceof EntityLiving))
             return EntityType.UNKNOWN;
@@ -162,7 +172,6 @@ public class EntityHelper {
         else
             return EntityType.UNKNOWN;
     }
-
     public static ArrayList<EntityLivingBase> getCloseEntities(boolean ignoreFriends, float range)
     {
         ArrayList<EntityLivingBase> closeEntities = new ArrayList<EntityLivingBase>();
@@ -177,7 +186,6 @@ public class EntityHelper {
     public static boolean lookChanged;
     public static float yaw;
     public static float pitch;
-
     public synchronized static void faceEntityPacket(EntityLivingBase entity)
     {
         float[] rotations = getRotationsNeeded(entity);
@@ -188,8 +196,7 @@ public class EntityHelper {
             lookChanged = true;
         }
     }
-    private final static float limitAngleChange(final float current,
-                                                final float intended, final float maxChange)
+    private final static float limitAngleChange(final float current, final float intended, final float maxChange)
     {
         float change = intended - current;
         if(change > maxChange)

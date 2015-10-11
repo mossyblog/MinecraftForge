@@ -18,10 +18,8 @@ public enum MossyClient {
     public CmdManagerHandler cmdManagerHandler;
     public OptionsManager options;
     public void startClient() {
-        chat = new ChatMessenger();
-        keybinds = new Keybinds();
-        cmdManagerHandler = new CmdManagerHandler();
-        options = new OptionsManager();
+
+        reloadMods();
 
         // Wire-up Forge level Events.
         MinecraftForge.EVENT_BUS.register( cmdManagerHandler);
@@ -30,6 +28,14 @@ public enum MossyClient {
     public OptionsManager.Mods getMods() {
         return Mossy.options.mods;
     }
+
+    public void reloadMods() {
+        chat = new ChatMessenger();
+        keybinds = new Keybinds();
+        cmdManagerHandler = new CmdManagerHandler();
+        options = new OptionsManager();
+    }
+
     public OptionsManager.Target getTargets() {
         return Mossy.options.target;
     }

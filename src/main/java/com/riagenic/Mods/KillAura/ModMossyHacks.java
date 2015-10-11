@@ -4,15 +4,19 @@ import com.riagenic.UI.UITextAlignment;
 import com.riagenic.UI.UIRenderer;
 import com.riagenic.Utils.EntityHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.*;
 import net.minecraft.init.Items;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -35,6 +39,7 @@ public class ModMossyHacks {
     public void preInit(FMLPreInitializationEvent event) {
         logger.info("Pre-Init");
         MinecraftForge.EVENT_BUS.register(this);
+        FMLCommonHandler.instance().bus().register(this);
 
         // Register the Initial Gamma Setting prior to Loading.
         previousGammaSetting = mc.gameSettings.gammaSetting;
@@ -49,9 +54,6 @@ public class ModMossyHacks {
     public void onRenderWorldLastEvent(RenderWorldLastEvent event) {
         ticks = event.partialTicks;
 
-        Mossy.getMods().IsBrightnessEnabled = true;
-        Mossy.getMods().IsRainEnabled = false;
-
         if(mc.theWorld != null) {
             ClosestEntityOverlay(EntityHelper.getClosestEntity(true));
         }
@@ -62,7 +64,7 @@ public class ModMossyHacks {
                 mc.gameSettings.gammaSetting += 0.5F;
             }
         } else if (mc.gameSettings.gammaSetting > 0.5F) {
-            if (mc.gameSettings.gammaSetting < mc.gameSettings.gammaSetting)
+            if (mc.gameSettings.gammaSetting < 1F)
                 mc.gameSettings.gammaSetting = 0.5F;
             else
                 mc.gameSettings.gammaSetting -= 0.5F;
@@ -104,4 +106,6 @@ public class ModMossyHacks {
             UIRenderer.RenderFloatingItemIcon(x, y + entity.height - 2, z, Items.cake, ticks);
         }
     }
+
+
 }

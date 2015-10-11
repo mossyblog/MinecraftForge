@@ -25,6 +25,7 @@ public class CmdManagerHandler {
 
     public CmdManagerHandler() {
         addCommand(new CmdDay());
+        addCommand(new CmdReloadMods());
     }
 
     @SubscribeEvent
@@ -65,7 +66,7 @@ public class CmdManagerHandler {
                     // MossyClient.Mossy.eventManager.handleException(e, cmd, "executing", "Exact input: `" + event.getMessage() + "`");
                 }
             else
-                MossyClient.Mossy.chat.success(EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD  + "/" + commandName + EnumChatFormatting.RESET + " is not a valid command.");
+                MossyClient.Mossy.chat.failure(EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + "/" + commandName + EnumChatFormatting.RESET + " is not a valid command.");
         }
     }
     public Cmd getCommandByClass(Class<?> commandClass)

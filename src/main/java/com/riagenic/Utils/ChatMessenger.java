@@ -103,6 +103,12 @@ public class ChatMessenger
 
     public void cmd(String message)
     {
-        Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("§c[§6M§c]§f §0§l[§aCMD§0§l]§f " + message));
+        message = new StringBuilder().append(AQUA)
+                .append(BOLD)
+                .append("[CMD] ")
+                .append(LIGHT_PURPLE)
+                .append(message)
+                .toString();
+        message(message);
     }
 }
