@@ -51,21 +51,21 @@ public class CmdManagerHandler {
                 }catch(Cmd.SyntaxError e)
                 {
                     if(e.getMessage() != null)
-                        MossyClient.INSTANCE.chat.error("Syntax Error! " + e.getMessage());
+                        MossyClient.Mossy.chat.error("Syntax Error! " + e.getMessage());
                     else
-                        MossyClient.INSTANCE.chat.error("Syntax Error!");
+                        MossyClient.Mossy.chat.error("Syntax Error!");
 
                     cmd.printSyntax();
                 }catch(Cmd.Error e)
                 {
-                    MossyClient.INSTANCE.chat.error(e.getMessage());
+                    MossyClient.Mossy.chat.error(e.getMessage());
                 }catch(Exception e)
                 {
-                    MossyClient.INSTANCE.chat.failure(e.getMessage());
-                    // MossyClient.INSTANCE.eventManager.handleException(e, cmd, "executing", "Exact input: `" + event.getMessage() + "`");
+                    MossyClient.Mossy.chat.failure(e.getMessage());
+                    // MossyClient.Mossy.eventManager.handleException(e, cmd, "executing", "Exact input: `" + event.getMessage() + "`");
                 }
             else
-                MossyClient.INSTANCE.chat.success(EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD  + "/" + commandName + EnumChatFormatting.RESET + " is not a valid command.");
+                MossyClient.Mossy.chat.success(EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD  + "/" + commandName + EnumChatFormatting.RESET + " is not a valid command.");
         }
     }
     public Cmd getCommandByClass(Class<?> commandClass)

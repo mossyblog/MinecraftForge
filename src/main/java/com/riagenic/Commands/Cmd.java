@@ -61,7 +61,7 @@ public abstract class Cmd {
 
     public void printHelp() {
         for (String line : help.split("\n"))
-            MossyClient.INSTANCE.chat.message(line);
+            MossyClient.Mossy.chat.message(line);
     }
 
     public void printSyntax() {
@@ -72,7 +72,7 @@ public abstract class Cmd {
                 output += "\n    " + syntax[i];
         }
         for (String line : output.split("\n"))
-            MossyClient.INSTANCE.chat.message(line);
+            MossyClient.Mossy.chat.message(line);
     }
 
     protected final int[] argsToPos(String... args) throws Cmd.Error {
