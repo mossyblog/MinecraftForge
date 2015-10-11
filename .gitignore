@@ -19,7 +19,10 @@
 /buildSrc
 /projects/.gradle
 /projects/.idea
-/projects/Clean/*
+/projects/Clean/
+/projects/Forge/bin/
+/projects/Forge/build/
+/projects/Forge/logs/
 /projects/run/
 
 
