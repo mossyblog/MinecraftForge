@@ -3,15 +3,11 @@ package com.riagenic.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityGolem;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.passive.EntityAmbientCreature;
-import net.minecraft.entity.passive.EntityWaterMob;
+import net.minecraft.entity.*;
+import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.monster.*;
+import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
@@ -49,6 +45,122 @@ public class EntityHelper {
                 }
             }
         return closestEntity;
+    }
+    public enum EntityType {
+        BAT,
+        CHICKEN,
+        HORSE,
+        MOOSHROOM,
+        OCELOT,
+        PIG,
+        COW,
+        RABBIT,
+        SHEEP,
+        SQUID,
+        WOLF,
+        WATERMOB,
+        BLAZE,
+        CAVESPIDER,
+        CREEPER,
+        ENDERMAN,
+        ENDERMITE,
+        GHAST,
+        GIANTZOMBIE,
+        GOLEM,
+        GUARDIAN,
+        IRONGOLEM,
+        MAGMACUBE,
+        PIGZOMBIE,
+        SILVERFISH,
+        SKELETON,
+        SLIME,
+        SNOWMAN,
+        SPIDER,
+        WITCH,
+        ZOMBIE,
+        WITHER,
+        DRAGON,
+        VILLAGER,
+        PLAYER,
+        UNKNOWN
+    }
+    public static EntityType getEntityType(EntityLiving entity) {
+
+        if (!(entity instanceof EntityLiving))
+            return EntityType.UNKNOWN;
+
+        if(entity.getClass().isAssignableFrom(EntityBat.class))
+            return EntityType.BAT;
+        else if(entity.getClass().isAssignableFrom(EntityChicken.class))
+            return EntityType.CHICKEN;
+        else if(entity.getClass().isAssignableFrom(EntityHorse.class))
+            return EntityType.HORSE;
+        else if(entity.getClass().isAssignableFrom(EntityMooshroom.class))
+            return EntityType.MOOSHROOM;
+        else if(entity.getClass().isAssignableFrom(EntityOcelot.class))
+            return EntityType.OCELOT;
+        else if(entity.getClass().isAssignableFrom(EntityPig.class))
+            return EntityType.PIG;
+        else if(entity.getClass().isAssignableFrom(EntityCow.class))
+            return EntityType.COW;
+        else if(entity.getClass().isAssignableFrom(EntityRabbit.class))
+            return EntityType.RABBIT;
+        else if(entity.getClass().isAssignableFrom(EntitySheep.class))
+            return EntityType.SHEEP;
+        else if(entity.getClass().isAssignableFrom(EntitySquid.class))
+            return EntityType.SQUID;
+        else if(entity.getClass().isAssignableFrom(EntityWolf.class))
+            return EntityType.WOLF;
+        else if(entity.getClass().isAssignableFrom(EntityBlaze.class))
+            return EntityType.BLAZE;
+        else if(entity.getClass().isAssignableFrom(EntityCaveSpider.class))
+            return EntityType.CAVESPIDER;
+        else if(entity.getClass().isAssignableFrom(EntityCreeper.class))
+            return EntityType.CREEPER;
+        else if(entity.getClass().isAssignableFrom(EntityEnderman.class))
+            return EntityType.ENDERMAN;
+        else if(entity.getClass().isAssignableFrom(EntityEndermite.class))
+            return EntityType.ENDERMITE;
+        else if(entity.getClass().isAssignableFrom(EntityGiantZombie.class))
+            return EntityType.GIANTZOMBIE;
+        else if(entity.getClass().isAssignableFrom(EntityGolem.class))
+            return EntityType.GOLEM;
+        else if(entity.getClass().isAssignableFrom(EntityGuardian.class))
+            return EntityType.GUARDIAN;
+        else if(entity.getClass().isAssignableFrom(EntityIronGolem.class))
+            return EntityType.IRONGOLEM;
+        else if(entity.getClass().isAssignableFrom(EntityMagmaCube.class))
+            return EntityType.MAGMACUBE;
+        else if(entity.getClass().isAssignableFrom(EntitySilverfish.class))
+            return EntityType.SILVERFISH;
+        else if(entity.getClass().isAssignableFrom(EntityPigZombie.class) || entity.getClass().isAssignableFrom(EntityZombie.class))
+
+            if(entity.isImmuneToFire())
+                return EntityType.PIGZOMBIE;
+            else
+                return EntityType.ZOMBIE;
+
+
+        else if(entity.getClass().isAssignableFrom(EntitySkeleton.class))
+            return EntityType.SKELETON;
+        else if(entity.getClass().isAssignableFrom(EntitySlime.class))
+            return EntityType.SLIME;
+        else if(entity.getClass().isAssignableFrom(EntitySnowman.class))
+            return EntityType.SNOWMAN;
+        else if(entity.getClass().isAssignableFrom(EntitySpider.class))
+            return EntityType.SPIDER;
+        else if(entity.getClass().isAssignableFrom(EntityWitch.class))
+            return EntityType.WITCH;
+        else if(entity.getClass().isAssignableFrom(EntityWither.class))
+            return EntityType.WITHER;
+        else if(entity.getClass().isAssignableFrom(EntityDragon.class))
+            return EntityType.DRAGON;
+        else if(entity.getClass().isAssignableFrom(EntityVillager.class))
+            return EntityType.VILLAGER;
+        else if(entity.getClass().isAssignableFrom(EntityPlayer.class))
+            return EntityType.PLAYER;
+        else
+            return EntityType.UNKNOWN;
     }
 
     public static ArrayList<EntityLivingBase> getCloseEntities(boolean ignoreFriends, float range)
@@ -155,7 +267,19 @@ public class EntityHelper {
 
         return false;
     }
-
+    public static EntityLivingBase searchEntityByNameRaw(String name)
+    {
+        EntityLivingBase newEntity = null;
+        for(Object o : Minecraft.getMinecraft().theWorld.loadedEntityList)
+            if(isCorrectEntity(o))
+            {
+                EntityLivingBase en = (EntityLivingBase)o;
+                if(!(o instanceof EntityPlayerSP) && !en.isDead)
+                    if(newEntity == null && en.getName().equals(name))
+                        newEntity = en;
+            }
+        return newEntity;
+    }
     private static boolean checkName(String name) {
         // check colors
         String[] colors =
@@ -167,4 +291,6 @@ public class EntityHelper {
         // unknown color / no color => white
         return (unknownColor || !name.contains("§"));
     }
+
+
 }

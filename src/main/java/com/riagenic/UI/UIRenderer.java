@@ -202,7 +202,7 @@ public class UIRenderer {
         int lineHeight = 10;
         int paddingH = 4;
 
-        GL11.glColor4f(1f, 1f, 1f, 0.5f);
+        GL11.glColor4f(1f, 1f, 1f, 0.05f);
         GL11.glPushMatrix();
         GL11.glTranslatef(dx, dy, dz);
         GL11.glRotatef(-renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
