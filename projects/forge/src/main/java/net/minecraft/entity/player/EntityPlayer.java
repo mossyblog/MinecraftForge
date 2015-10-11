@@ -10,8 +10,6 @@ import java.util.UUID;
 
 import com.riagenic.MossyClient;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockBed;
-import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.server.CommandBlockLogic;
@@ -36,7 +34,6 @@ import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.event.ClickEvent;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerPlayer;
@@ -79,16 +76,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.common.ISpecialArmor.ArmorProperties;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.EntityInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
-import net.minecraftforge.event.entity.player.PlayerDropsEvent;
-import net.minecraftforge.event.entity.player.PlayerFlyableFallEvent;
-import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 
 public abstract class EntityPlayer extends EntityLivingBase
 {
@@ -2121,7 +2109,7 @@ public abstract class EntityPlayer extends EntityLivingBase
     /*================================ HAXE ================================================*/
     public boolean isPushedByWater()
     {
-        return MossyClient.INSTANCE.getMods().IsKillAuraEnabled && !this.capabilities.isFlying;
+        return MossyClient.Mossy.getMods().IsKillAuraEnabled && !this.capabilities.isFlying;
     }
     /*================================ HAXE ================================================*/
     public Scoreboard getWorldScoreboard()

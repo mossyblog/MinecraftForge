@@ -1,8 +1,6 @@
 package net.minecraft.client.multiplayer;
 
 import com.riagenic.HAXE;
-import com.riagenic.MossyClient;
-import com.riagenic.Options.OptionsManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -210,7 +208,7 @@ public class PlayerControllerMP
                 this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, loc, face));
                 clickBlockCreative(this.mc, this, loc, face);
 
-                this.blockHitDelay = INSTANCE.getMods().IsFastBreakEnabled ? 0 : 5;
+                this.blockHitDelay = Mossy.getMods().IsFastBreakEnabled ? 0 : 5;
             }
             else if (!this.isHittingBlock || !this.isHittingPosition(loc))
             {
@@ -273,7 +271,7 @@ public class PlayerControllerMP
         }
         else if (this.currentGameType.isCreative() && this.mc.theWorld.getWorldBorder().contains(posBlock))
         {
-            this.blockHitDelay = INSTANCE.getMods().IsFastBreakEnabled ? 0 : 5;
+            this.blockHitDelay = Mossy.getMods().IsFastBreakEnabled ? 0 : 5;
             this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, posBlock, directionFacing));
             clickBlockCreative(this.mc, this, posBlock, directionFacing);
             return true;
@@ -293,8 +291,8 @@ public class PlayerControllerMP
 
 
                 // PUMP UP THE SPEED YO...
-                if(INSTANCE.getMods().IsFastBreakEnabled && !currentGameType.isCreative()) {
-                    blckDmgAmt *= INSTANCE.getMods().FastBreakSpeed;
+                if(Mossy.getMods().IsFastBreakEnabled && !currentGameType.isCreative()) {
+                    blckDmgAmt *= Mossy.getMods().FastBreakSpeed;
                 }
 
                 this.curBlockDamageMP += blckDmgAmt;
@@ -313,8 +311,8 @@ public class PlayerControllerMP
                     this.onPlayerDestroyBlock(posBlock, directionFacing);
                     this.curBlockDamageMP = 0.0F;
                     this.stepSoundTickCounter = 0.0F;
-                    this.blockHitDelay = INSTANCE.getMods().IsFastBreakEnabled ? 0 : 5;
-                } else if( !this.currentGameType.isCreative() && INSTANCE.getMods().IsFastBreakEnabled ) {
+                    this.blockHitDelay = Mossy.getMods().IsFastBreakEnabled ? 0 : 5;
+                } else if( !this.currentGameType.isCreative() && Mossy.getMods().IsFastBreakEnabled ) {
                     this.netClientHandler.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, posBlock, directionFacing));
                 }
 

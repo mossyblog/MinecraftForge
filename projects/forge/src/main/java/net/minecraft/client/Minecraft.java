@@ -482,7 +482,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
         // TODO : HAXED - Bootstrap MossyClient.
         /*================================ HAXE ================================================*/
-        MossyClient.INSTANCE.startClient();
+        MossyClient.Mossy.startClient();
         /*================================ HAXE ================================================*/
         if (this.serverName != null)
         {
@@ -1819,7 +1819,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                         // TODO : HAXED - Injected keyEvent Bindings
                         /*================================ HAXE ================================================*/
                         if(Keyboard.getEventKey() != 0) {
-                            String eventCommand = MossyClient.INSTANCE.keybinds.get(Keyboard.getKeyName(Keyboard.getEventKey()));
+                            String eventCommand = MossyClient.Mossy.keybinds.get(Keyboard.getKeyName(Keyboard.getEventKey()));
                             if(eventCommand != null)
                                 thePlayer.sendAutomaticChatMessage(eventCommand);
                         }

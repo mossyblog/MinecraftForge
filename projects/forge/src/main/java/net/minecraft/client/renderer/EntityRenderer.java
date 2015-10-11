@@ -10,7 +10,6 @@ import java.util.concurrent.Callable;
 import com.riagenic.HAXE;
 import com.riagenic.MossyClient;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -39,13 +38,11 @@ import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.EnumWorldBlockLayer;
 import net.minecraft.util.MathHelper;
@@ -504,7 +501,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
     @HAXE(Side.CLIENT)
     private void hurtCameraEffect(float p_78482_1_)
     {
-        if(MossyClient.INSTANCE.getMods().IsHurtcamEnabled)
+        if(MossyClient.Mossy.getMods().IsHurtcamEnabled)
             return;
 
         if (this.mc.getRenderViewEntity() instanceof EntityLivingBase)
@@ -1526,7 +1523,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
     @HAXE(Side.CLIENT)
     protected void renderRainSnow(float partialTicks)
     {
-        if(MossyClient.INSTANCE.getMods().IsRainEnabled)
+        if(MossyClient.Mossy.getMods().IsRainEnabled)
             return;
 
         net.minecraftforge.client.IRenderHandler renderer = this.mc.theWorld.provider.getWeatherRenderer();

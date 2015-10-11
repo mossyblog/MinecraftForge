@@ -8,13 +8,10 @@ import java.util.concurrent.Callable;
 
 import com.riagenic.Events.EntityWithinRangeEvent;
 import com.riagenic.HAXE;
-import com.riagenic.Mods.KillAura.ModKillAura;
-import com.riagenic.MossyClient;
 import com.riagenic.Options.OptionsManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
-import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockWall;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -1189,10 +1186,10 @@ public abstract class Entity implements ICommandSender
         // TODO : HAXED - onCollideWithPlayer
         /*================================ HAXE ================================================*/
         Minecraft mc = Minecraft.getMinecraft();
-        OptionsManager options = INSTANCE.options;
+        OptionsManager options = Mossy.options;
         if(mc.thePlayer != null) {
             float distToMe = mc.thePlayer.getDistanceToEntity(this);
-            if (distToMe < INSTANCE.getMods().KillAuraRange && INSTANCE.getMods().IsKillAuraEnabled)
+            if (distToMe < Mossy.getMods().KillAuraRange && Mossy.getMods().IsKillAuraEnabled)
                 MinecraftForge.EVENT_BUS.post(new EntityWithinRangeEvent(this));
         }
         /*================================ HAXE ================================================*/
@@ -1857,7 +1854,7 @@ public abstract class Entity implements ICommandSender
     @HAXE(Side.CLIENT)
     public void setVelocity(double x, double y, double z)
     {
-        if(!INSTANCE.getMods().IsKillAuraEnabled) {
+        if(!Mossy.getMods().IsKillAuraEnabled) {
             this.motionX = x;
             this.motionY = y;
             this.motionZ = z;

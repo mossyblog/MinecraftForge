@@ -6,8 +6,6 @@ import java.util.UUID;
 
 import com.riagenic.Events.EntityWithinRangeEvent;
 import com.riagenic.HAXE;
-import com.riagenic.Mods.KillAura.ModKillAura;
-import com.riagenic.MossyClient;
 import com.riagenic.Options.OptionsManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -49,12 +47,11 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import static com.riagenic.MossyClient.INSTANCE;
+import static com.riagenic.MossyClient.Mossy;
 
 public abstract class EntityLiving extends EntityLivingBase
 {
@@ -178,10 +175,10 @@ public abstract class EntityLiving extends EntityLivingBase
         /*================================ HAXE ================================================*/
 
         Minecraft mc = Minecraft.getMinecraft();
-        OptionsManager.Target target = INSTANCE.getTargets();
+        OptionsManager.Target target = Mossy.getTargets();
         if(mc.thePlayer != null) {
             float distToMe = mc.thePlayer.getDistanceToEntity(this);
-            if (distToMe < INSTANCE.getMods().KillAuraRange && INSTANCE.getMods().IsKillAuraEnabled) {
+            if (distToMe < Mossy.getMods().KillAuraRange && Mossy.getMods().IsKillAuraEnabled) {
                 MinecraftForge.EVENT_BUS.post(new EntityWithinRangeEvent(this));
 
 
