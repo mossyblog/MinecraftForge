@@ -1523,7 +1523,8 @@ public class EntityRenderer implements IResourceManagerReloadListener
     @HAXE(Side.CLIENT)
     protected void renderRainSnow(float partialTicks)
     {
-        if(MossyClient.Mossy.getMods().IsRainEnabled)
+        // RAIN.. RAIN Go AWAY... COME BACK ANOTHER DAY.
+        if(!MossyClient.Mossy.getMods().IsRainEnabled)
             return;
 
         net.minecraftforge.client.IRenderHandler renderer = this.mc.theWorld.provider.getWeatherRenderer();

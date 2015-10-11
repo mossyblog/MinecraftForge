@@ -2,6 +2,9 @@ package net.minecraft.block;
 
 import java.util.Iterator;
 import java.util.Random;
+
+import com.riagenic.HAXE;
+import com.riagenic.MossyClient;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
@@ -21,6 +24,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeColorHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import static com.riagenic.MossyClient.Mossy;
 
 public abstract class BlockLiquid extends Block
 {
@@ -77,10 +82,16 @@ public abstract class BlockLiquid extends Block
         return false;
     }
 
+    // TODO : HAXED - canCollidCheck
+    /*================================ HAXE ================================================*/
+    @HAXE(Side.CLIENT)
     public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid)
     {
-        return hitIfLiquid && ((Integer)state.getValue(LEVEL)).intValue() == 0;
+        boolean result = hitIfLiquid && ((Integer)state.getValue(LEVEL)).intValue() == 0 || Mossy.getMods().IsWaterWalkEnabled;
+        result = false;
+        return result;
     }
+    /*================================ HAXE ================================================*/
 
     public boolean isBlockSolid(IBlockAccess worldIn, BlockPos pos, EnumFacing side)
     {
@@ -94,11 +105,15 @@ public abstract class BlockLiquid extends Block
         return worldIn.getBlockState(pos).getBlock().getMaterial() == this.blockMaterial ? false : (side == EnumFacing.UP ? true : super.shouldSideBeRendered(worldIn, pos, side));
     }
 
+    // TODO : HAXED - getCollisionBoundingBox
+    /*================================ HAXE ================================================*/
+    @HAXE(Side.CLIENT)
     public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state)
     {
-        return null;
-    }
 
+        return Mossy.getMods().IsWaterWalkEnabled ? AxisAlignedBB.fromBounds(pos.getX() + minX, pos.getY() + minY, pos.getZ() + minZ, pos.getX() + maxX, pos.getY() + maxY, pos.getZ() + maxZ) : null;
+    }
+    /*================================ HAXE ================================================*/
     @SideOnly(Side.CLIENT)
     public boolean func_176364_g(IBlockAccess p_176364_1_, BlockPos p_176364_2_)
     {

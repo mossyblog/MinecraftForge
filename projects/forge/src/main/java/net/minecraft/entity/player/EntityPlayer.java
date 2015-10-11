@@ -2109,7 +2109,7 @@ public abstract class EntityPlayer extends EntityLivingBase
     /*================================ HAXE ================================================*/
     public boolean isPushedByWater()
     {
-        return MossyClient.Mossy.getMods().IsKillAuraEnabled && !this.capabilities.isFlying;
+        return !MossyClient.Mossy.getMods().IsWaterWalkEnabled && !this.capabilities.isFlying;
     }
     /*================================ HAXE ================================================*/
     public Scoreboard getWorldScoreboard()
